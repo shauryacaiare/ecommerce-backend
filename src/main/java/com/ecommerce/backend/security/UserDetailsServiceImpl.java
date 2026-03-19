@@ -1,8 +1,7 @@
-package com.ecommerce.backend.service;
+package com.ecommerce.backend.security;
 
 import com.ecommerce.backend.excpetion.ResourceNotFoundException;
 import com.ecommerce.backend.repository.UserRepo;
-import com.ecommerce.backend.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AppUserService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepo userRepo;
 
@@ -19,7 +18,7 @@ public class AppUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username){
 
         return userRepo.findByEmail(username)
-                .map(user -> new UserPrincipal(user))
+                .map(UserPrincipal::new)
                 .orElseThrow(() -> new ResourceNotFoundException("UserName","email",username));
     }
 }
