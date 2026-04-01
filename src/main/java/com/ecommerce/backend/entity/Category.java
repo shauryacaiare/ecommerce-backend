@@ -1,15 +1,18 @@
 package com.ecommerce.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
+@ToString(exclude = "products")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "category")
@@ -27,4 +30,8 @@ public class Category {
     @NotBlank(message = "Category description is required")
     @Column(nullable = false)
     private String description;
+
+    @ManyToMany(mappedBy = "categories",fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Product> products;
 }

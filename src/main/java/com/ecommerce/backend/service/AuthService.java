@@ -5,9 +5,10 @@ import com.ecommerce.backend.dto.requestdto.LoginRequestDto;
 import com.ecommerce.backend.dto.requestdto.SignUpRequestDto;
 import com.ecommerce.backend.dto.responsedto.AuthResponseDto;
 import com.ecommerce.backend.dto.responsedto.SignUpResponseDto;
-import com.ecommerce.backend.entity.User;
+import com.ecommerce.backend.entity.Customer;
 import com.ecommerce.backend.entity.UserType;
 import com.ecommerce.backend.excpetion.ResourceAlreadyExistException;
+import com.ecommerce.backend.repository.CustomerRepository;
 import com.ecommerce.backend.repository.UserRepo;
 import com.ecommerce.backend.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.Date;
 @Slf4j
 public class AuthService {
 
+    private final CustomerRepository customerRepository;
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -34,14 +36,14 @@ public class AuthService {
     public SignUpResponseDto signup(SignUpRequestDto signUpRequestDto){
         String email = signUpRequestDto.getEmail();
         checkUserExists(email);
-        User user = User.builder()
+        Customer customer = Customer.builder()
                 .name(signUpRequestDto.getName())
                 .email(email)
                 .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
                 .userType(UserType.CUSTOMER)
                 .build();
 
-        User savedUser = saveUser(user);
+        Customer savedUser = saveUser(customer);
         return SignUpResponseDto.builder()
                 .name(savedUser.getName())
                 .email(savedUser.getEmail())
@@ -56,8 +58,8 @@ public class AuthService {
         }
     }
 
-    private User saveUser(User user) {
-        return userRepo.save(user);
+    private Customer saveUser(Customer customer) {
+        return customerRepository.save(customer);
 
     }
 

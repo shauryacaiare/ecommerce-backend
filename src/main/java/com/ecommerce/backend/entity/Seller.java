@@ -1,24 +1,25 @@
 package com.ecommerce.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "seller")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@DiscriminatorValue("SELLER")
 public class Seller extends User{
 
+    @Column(name = "gst_number")
     private String gstNumber;
+
+    @Column(name = "registration_id")
     private String registrationId;
 
     @OneToOne

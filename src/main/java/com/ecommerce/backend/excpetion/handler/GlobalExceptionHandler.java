@@ -1,5 +1,7 @@
 package com.ecommerce.backend.excpetion.handler;
 
+import com.ecommerce.backend.excpetion.InsufficientStockException;
+import com.ecommerce.backend.excpetion.InvalidOrderStateException;
 import com.ecommerce.backend.excpetion.ResourceAlreadyExistException;
 import com.ecommerce.backend.excpetion.ResourceNotFoundException;
 import com.ecommerce.backend.excpetion.response.ErrorResponseDto;
@@ -112,4 +114,31 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(InvalidOrderStateException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidOrderState(
+            InvalidOrderStateException ex) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .status(HttpStatus.CONFLICT.value())  // 409 — state conflict
+                .timestamp(LocalDateTime.now())
+                .errors(null)
+                .build();
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponseDto> handleInsufficientStock(
+            InsufficientStockException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(ex.getProductName(),
+                "Available: " + ex.getAvailableStock() +
+                        ", Requested: " + ex.getRequestedQuantity());
+
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .status(HttpStatus.CONFLICT.value())  // 409
+                .timestamp(LocalDateTime.now())
+                .errors(errors)
+                .build();
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.CONFLICT);
+    }
 }

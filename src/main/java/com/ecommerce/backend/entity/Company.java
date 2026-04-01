@@ -1,6 +1,7 @@
 package com.ecommerce.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,10 +15,10 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = "products")
 public class Company {
 
     @Id
@@ -33,8 +34,27 @@ public class Company {
     @NotBlank(message = "company contact number is required")
     private String number;
 
-    @Column(name = "is_active",nullable = false)
-    private Boolean isActive;
+    @Email
+    @Column(name = "company_email",nullable = false)
+    @NotBlank(message = "company email address is missing")
+    private String email;
+
+    @Builder.Default
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+
+    @OneToMany(mappedBy = "company",fetch = FetchType.LAZY)
+    private Set<Product> products;
+
+    public void addProduct(Product product){
+        this.getProducts().add(product);
+        product.setCompany(this);
+    }
+
+    public void removeProduct(Product product){
+        products.remove(product);
+        product.setCompany(null);
+    }
 
     @CreationTimestamp
     private LocalDateTime createdAt;
